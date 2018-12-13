@@ -79,7 +79,7 @@ zuul:
     redis-host: 127.0.0.1                             #Redis 服务器   
     policy-map:
       api-a:                                          #serviceId为api-a的限流规则 
-        order: -1                                     #规则排序，但一个请求有多条规则复合时，排序值最小的规则生效
+        order: -1                                     #规则排序，但一个请求有多条规则匹配时，排序值最小的规则生效
         baseExp: Headers['userid']                    #基于HTTP header里key为“userid”的值聚合统计
         pathRegExp: /s1/.*                            #请求URI的匹配正则表达式 
         timeUnit: MINUTES                             #时间单位，支持SECONDS,MINUTES,HOURS,DAYS 
