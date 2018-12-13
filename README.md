@@ -262,7 +262,7 @@ spring:
 
 ### Dynamic configuration
 
-We can change the configuraton by internal RESTful API.
+We can change the limiting policy by internal RESTful API.
 
 ``` java
 
