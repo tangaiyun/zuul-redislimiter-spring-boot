@@ -1,0 +1,47 @@
+server:
+  port: 8000  #端口号
+
+spring:
+  application:
+    name: service-zuul
+
+#zuul:
+#  routes:
+#    api-a:
+#      path: /ribbon/**
+#      serviceId: service-ribbon  #如果是/ribbon/**路径下的请求，则跳转到service-ribbon
+#    api-b:
+#      path: /feign/**
+#      serviceId: service-feign  #如果是/feign/**路径下的请求，则跳转到service-feign
+
+zuul:
+  routes:
+    service1: /s1/**
+    service2: /s2/**
+  redis-limiter:
+    redis-host: 127.0.0.1
+    policy-map:
+      api-a:
+        order: -1
+        baseExp: Headers['userid']
+        pathRegExp: /s1/.*
+        timeUnit: MINUTES
+        permits: 2
+      api-a1:
+        order: 0
+        baseExp: Headers['userid']
+        pathRegExp: /s1.*
+        timeUnit: MINUTES
+        permits: 3
+      api-b:
+        order: 2
+        baseExp: Headers['userid']
+        pathRegExp: /s2/.*
+        timeUnit: MINUTES
+        permits: 5
+eureka:
+  client:
+    serviceUrl:
+          defaultZone: http://localhost:8761/eureka/
+  instance:
+      prefer-ip-address: true
