@@ -77,17 +77,17 @@ zuul:
     service1: /s1/**
     service2: /s2/**
   redis-limiter:
-    redis-host: 127.0.0.1
+    redis-host: 127.0.0.1                             #Redis server host    
     policy-map:
-      api-a:
-        order: -1
-        baseExp: Headers['userid']
-        pathRegExp: /s1/.*
-        timeUnit: MINUTES
-        permits: 2
+      api-a:                                          #limiting policy with serviceId api-a 
+        order: -1                                     #n policies matched, which with lower order value has high priority
+        baseExp: Headers['userid']                    #base on HTTP header with key "userid"
+        pathRegExp: /s1/.*                            #URI pattern 
+        timeUnit: MINUTES                             #timeUnit, supports SECONDS,MINUTES,HOURS,DAYS 
+        permits: 2                                    #Number of visits allowed per a timeUnit
       api-a1:
         order: 0
-        baseExp: Headers['userid']
+        baseExp: Cookies['userid']
         pathRegExp: /s1.*
         timeUnit: MINUTES
         permits: 3
@@ -247,7 +247,7 @@ spring:
         policy-map:                     # rate limiting policies 
           api-a:                        # unique service id
             order: -1                   # order
-            baseExp: Headers['userid']  # what base on to limit, Spel expression, support Headers['xxx'] or Cookies['xxx']  
+            baseExp: Headers['userid']  # value to base on, Spel expression without "#", supports Headers['xxx'] or Cookies['xxx']  
             pathRegExp: /s1/.*          # URI path pattern, a Regular expression 
             timeUnit: MINUTES           # timeUnit supports SECONDS, MINUTES, HOURS,DAYS
             permits: 2                  # Number of visits allowed per a timeUnit
