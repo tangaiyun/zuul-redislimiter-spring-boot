@@ -41,6 +41,8 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
 
     private final ZuulRedisLimiterProperties zuulRedisLimiterProperties;
 
+    private final PolicyValidator policyValidator;
+
     private ConcurrentHashMap<String, LimitingPolicy> policyMap = new ConcurrentHashMap<>();
 
     @Override
@@ -60,13 +62,18 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
             LimitingPolicy limitingPolicy = entry.getValue();
             limitingPolicy.setServiceId(serviceId);
             if (policyMap.containsKey(serviceId)) {
-                throw new RuntimeException(String.format("Zuul Limiting config includes duplicate serviceId %s", serviceId));
+                throw new RuntimeException(String.format("Zuul Limiting policy includes duplicate serviceId %s", serviceId));
             }
             String pathRegExp = limitingPolicy.getPathRegExp();
             if (!pathSet.add(limitingPolicy.getPathRegExp())) {
-                throw new RuntimeException(String.format("Zuul Limiting config includes duplicate path regular expression %s", pathRegExp));
+                throw new RuntimeException(String.format("Zuul Limiting policy includes duplicate path regular expression %s", pathRegExp));
             }
-            policyMap.put(serviceId, limitingPolicy);
+            if(policyValidator.validate(limitingPolicy)) {
+                policyMap.put(serviceId, limitingPolicy);
+            }
+            else {
+                throw new RuntimeException(String.format("Zuul Limiting policy validate failed, the policy is " + limitingPolicy));
+            }
         }
     }
 

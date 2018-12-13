@@ -85,7 +85,7 @@ public class ZuulRedisLimiterConfiguration {
     @Bean(initMethod = "init")
     @ConditionalOnMissingBean(LimitingPolicyManager.class)
     public LimitingPolicyManager limitingPolicyManager() {
-        LimitingPolicyManager limitingPolicyManager = new LimitingPolicyManager(zuulRedisLimiterProperties);
+        LimitingPolicyManager limitingPolicyManager = new LimitingPolicyManager(zuulRedisLimiterProperties, policyValidator());
         return limitingPolicyManager;
     }
 
@@ -101,5 +101,12 @@ public class ZuulRedisLimiterConfiguration {
     public LimitingPolicyResource limitingPolicyResource() {
         LimitingPolicyResource limitingPolicyResource = new LimitingPolicyResource(jedisPool(), zuulRedisLimiterProperties, limitingPolicyManager());
         return limitingPolicyResource;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PolicyValidator.class)
+    public PolicyValidator policyValidator() {
+        PolicyValidator policyValidator = new DefaultPolicyValidator();
+        return policyValidator;
     }
 }
