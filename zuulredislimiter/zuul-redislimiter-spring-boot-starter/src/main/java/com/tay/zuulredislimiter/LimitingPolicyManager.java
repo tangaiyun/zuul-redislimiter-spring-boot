@@ -61,6 +61,9 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
             String serviceId = entry.getKey();
             LimitingPolicy limitingPolicy = entry.getValue();
             limitingPolicy.setServiceId(serviceId);
+            if(!policyValidator.validate(limitingPolicy)) {
+                throw new RuntimeException(String.format("Zuul Limiting policy validate failed, the policy is " + limitingPolicy));
+            }
             if (policyMap.containsKey(serviceId)) {
                 throw new RuntimeException(String.format("Zuul Limiting policy includes duplicate serviceId %s", serviceId));
             }
@@ -68,12 +71,7 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
             if (!pathSet.add(limitingPolicy.getPathRegExp())) {
                 throw new RuntimeException(String.format("Zuul Limiting policy includes duplicate path regular expression %s", pathRegExp));
             }
-            if(policyValidator.validate(limitingPolicy)) {
-                policyMap.put(serviceId, limitingPolicy);
-            }
-            else {
-                throw new RuntimeException(String.format("Zuul Limiting policy validate failed, the policy is " + limitingPolicy));
-            }
+            policyMap.put(serviceId, limitingPolicy);
         }
     }
 
