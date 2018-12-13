@@ -292,7 +292,7 @@ public class LimitingPolicyResource {
 
 ```
 
-Currently, this framework support three actions (add, update, query, delete).
+Currently, this framework support four actions (add, update, query, delete).
 
 For example (as in the zuulapp project)
 
@@ -328,6 +328,19 @@ then the limiting policy for service with serviceId "api-a" changed.
 
 If we want to delete a limiting policy with serviceId "api-b", execute DELETE http://localhost:8000/zuullimiterpolicy/api-b, the limiting policy with serviceId "api-b" will be deleted.
 
+add a new limiting policy, assign Content-Type as application/json, then excute POST http://localhost:8000/zuullimiterpolicy, the request body as below: 
 
+``` json
+{
+  "serviceId": "api-d",
+  "order": -1,
+  "baseExp": "Headers['userid']",
+  "pathRegExp": "/s3/.*",
+  "timeUnit": "MINUTES",
+  "permits": 10,
+  "delete": false
+}
+```
+please be careful, the serviceId and pathRegExp should not be conflict with existed limiting policy.
 
 
