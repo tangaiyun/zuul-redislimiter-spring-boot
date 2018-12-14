@@ -99,7 +99,7 @@ public class ZuulRedisLimiterConfiguration {
     @Bean
     @ConditionalOnMissingBean(LimitingPolicyResource.class)
     public LimitingPolicyResource limitingPolicyResource() {
-        LimitingPolicyResource limitingPolicyResource = new LimitingPolicyResource(jedisPool(), zuulRedisLimiterProperties, limitingPolicyManager());
+        LimitingPolicyResource limitingPolicyResource = new LimitingPolicyResource(jedisPool(), zuulRedisLimiterProperties, limitingPolicyManager(), policyValidator());
         return limitingPolicyResource;
     }
 
