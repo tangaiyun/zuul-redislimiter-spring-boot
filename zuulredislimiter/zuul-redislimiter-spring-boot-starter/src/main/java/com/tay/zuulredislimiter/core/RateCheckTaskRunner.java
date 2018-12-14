@@ -65,7 +65,7 @@ public final class RateCheckTaskRunner implements ApplicationContextAware {
         }
         public Boolean call() {
             RedisRateLimiter redisRatelimiter = redisRateLimiterFactory.get(timeUnit, permits);
-            return redisRatelimiter.acquire(rateLimiterKey);
+            return redisRatelimiter.acquire(rateLimiterKey, permits);
         }
     }
 }
