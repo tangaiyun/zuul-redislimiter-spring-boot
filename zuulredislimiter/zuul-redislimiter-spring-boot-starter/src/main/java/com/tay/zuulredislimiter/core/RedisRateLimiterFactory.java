@@ -35,7 +35,7 @@ public class RedisRateLimiterFactory {
     private Cache<TimeUnit, RedisRateLimiter> redisRateLimiterCache =
             Caffeine.newBuilder().maximumSize(10).build();
 
-    public RedisRateLimiter get(TimeUnit timeUnit, int permits) {
+    public RedisRateLimiter get(TimeUnit timeUnit) {
         RedisRateLimiter redisRateLimiter = redisRateLimiterCache.getIfPresent(timeUnit);
         if(redisRateLimiter == null) {
             redisRateLimiter = new RedisRateLimiter(jedisPool, timeUnit);
