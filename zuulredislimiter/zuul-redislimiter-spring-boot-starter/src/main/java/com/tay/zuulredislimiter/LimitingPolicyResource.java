@@ -42,10 +42,17 @@ public class LimitingPolicyResource {
 
     private final LimitingPolicyManager limitingPolicyManager;
 
+    private final PolicyValidator policyValidator;
+
     @PostMapping
     public void add(@RequestBody LimitingPolicy limitingPolicy, HttpServletResponse response) throws IOException{
         String serviceId = limitingPolicy.getServiceId();
         String pathExp = limitingPolicy.getPathRegExp();
+        if(!policyValidator.validate(limitingPolicy)) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.getWriter().print("Zuul Limiting policy validate failed, the policy is " + limitingPolicy);
+            return;
+        }
         if(limitingPolicyManager.containServiceId(serviceId)) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.getWriter().print(String.format("Can not create a LimitingPolicy, because serviceId - %s is existed.", serviceId));
