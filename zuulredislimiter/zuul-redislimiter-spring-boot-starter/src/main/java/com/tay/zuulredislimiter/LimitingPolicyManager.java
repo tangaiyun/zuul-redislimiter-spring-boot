@@ -19,6 +19,8 @@
 package com.tay.zuulredislimiter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -44,6 +47,9 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
     private final PolicyValidator policyValidator;
 
     private ConcurrentHashMap<String, LimitingPolicy> policyMap = new ConcurrentHashMap<>();
+
+    private Cache<String, LimitingPolicy> LimitingPolicyCache =
+            Caffeine.newBuilder().maximumSize(10000).expireAfterWrite(1, TimeUnit.HOURS).build();
 
     @Override
     public void afterPropertiesSet() {
@@ -157,12 +163,15 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
     }
 
     public LimitingPolicy match(String requestPath){
-        Optional<LimitingPolicy> target =  policyMap.values().stream().filter(p -> Pattern.matches(p.getPathRegExp(), requestPath)).sorted(Comparator.comparing(LimitingPolicy::getOrder)).findFirst();
-        if(target.isPresent()) {
-            return target.get();
+        LimitingPolicy limitingPolicy = LimitingPolicyCache.getIfPresent(requestPath);
+        if(limitingPolicy == null) {
+            Optional<LimitingPolicy> target =  policyMap.values().stream().filter(p -> Pattern.matches(p.getPathRegExp(), requestPath)).sorted(Comparator.comparing(LimitingPolicy::getOrder)).findFirst();
+            if(target.isPresent()) {
+                limitingPolicy =  target.get();
+                LimitingPolicyCache.put(requestPath, limitingPolicy);
+            }
         }
-        else
-            return null;
+        return limitingPolicy;
     }
 
 }
