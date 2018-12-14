@@ -49,7 +49,7 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
     private ConcurrentHashMap<String, LimitingPolicy> policyMap = new ConcurrentHashMap<>();
 
     private Cache<String, LimitingPolicy> LimitingPolicyCache =
-            Caffeine.newBuilder().maximumSize(10000).expireAfterWrite(1, TimeUnit.HOURS).build();
+            Caffeine.newBuilder().maximumSize(10000).expireAfterAccess(1, TimeUnit.HOURS).build();
 
     @Override
     public void afterPropertiesSet() {
@@ -141,12 +141,18 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
                 policyMap.remove(policy.getServiceId());
             } else {
                 policyMap.put(policy.getServiceId(), policy);
+                LimitingPolicyCache.invalidateAll();
             }
         }
     }
 
     public LimitingPolicy get(String serviceId) {
-        return policyMap.get(serviceId);
+        LimitingPolicy limitingPolicy = policyMap.get(serviceId);
+        //protect inner state, only return copy
+        if(limitingPolicy != null) {
+            return  limitingPolicy.copy();
+        }
+        return null;
     }
 
     public boolean containServiceId(String serviceId) {
@@ -171,7 +177,12 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
                 LimitingPolicyCache.put(requestPath, limitingPolicy);
             }
         }
-        return limitingPolicy;
+        //protect inner state, only return copy
+        if(limitingPolicy !=null) {
+            return limitingPolicy.copy();
+        }
+        else
+            return null;
     }
 
 }
