@@ -86,7 +86,7 @@ public final class ZuulRateLimiterFilter extends ZuulFilter implements Applicati
             boolean isSuccess = rateCheckTaskRunner.checkRun(rateLimiterKey, timeUnit, permits);
 
             if(!isSuccess) {
-                rateExceeded(requestContext, baseExp, baseVal, pathExp, requestPath, permits, timeUnit.name());
+                rateExceeded(requestContext, limitingPolicy, baseVal, requestPath);
             }
 
         }
@@ -130,15 +130,16 @@ public final class ZuulRateLimiterFilter extends ZuulFilter implements Applicati
         context.setVariable("Headers", headerMap);
     }
 
-    private void rateExceeded(RequestContext requestContext, String baseExp, String baseVal, String pathExp, String requestPath, int permits, String timeUnit) {
+    private void rateExceeded(RequestContext requestContext, LimitingPolicy limitingPolicy, String baseVal, String requestPath) {
         buildDenyResponse(requestContext);
         RateExceedingEvent rateExceedingEvent = new RateExceedingEvent();
-        rateExceedingEvent.setBaseExp(baseExp);
+        rateExceedingEvent.setServiceId(limitingPolicy.getServiceId());
+        rateExceedingEvent.setBaseExp(limitingPolicy.getBaseExp());
         rateExceedingEvent.setBaseValue(baseVal);
-        rateExceedingEvent.setPathExp(pathExp);
+        rateExceedingEvent.setPathExp(limitingPolicy.getPathRegExp());
         rateExceedingEvent.setPathValue(requestPath);
-        rateExceedingEvent.setPermits(permits);
-        rateExceedingEvent.setTimeUnit(timeUnit);
+        rateExceedingEvent.setPermits(limitingPolicy.getPermits());
+        rateExceedingEvent.setTimeUnit(limitingPolicy.getTimeUnit());
         applicationContext.publishEvent(rateExceedingEvent);
     }
 
