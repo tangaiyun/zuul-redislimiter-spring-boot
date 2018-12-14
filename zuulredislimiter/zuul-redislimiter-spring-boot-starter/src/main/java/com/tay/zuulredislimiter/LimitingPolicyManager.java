@@ -139,9 +139,9 @@ public class LimitingPolicyManager extends JedisPubSub implements InitializingBe
         if(policy != null) {
             if (policy.isDelete()) {
                 policyMap.remove(policy.getServiceId());
+                LimitingPolicyCache.invalidateAll();
             } else {
                 policyMap.put(policy.getServiceId(), policy);
-                LimitingPolicyCache.invalidateAll();
             }
         }
     }
