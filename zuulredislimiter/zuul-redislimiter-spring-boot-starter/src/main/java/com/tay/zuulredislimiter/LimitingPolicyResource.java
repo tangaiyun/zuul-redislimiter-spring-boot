@@ -68,7 +68,11 @@ public class LimitingPolicyResource {
 
     @PutMapping
     public void update(@RequestBody LimitingPolicy limitingPolicy, HttpServletResponse response) throws IOException {
-
+    	if(!policyValidator.validate(limitingPolicy)) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.getWriter().print("Zuul Limiting policy validate failed, the policy is " + limitingPolicy);
+            return;
+        }	
         if(limitingPolicyManager.containServiceId(limitingPolicy.getServiceId()) && limitingPolicyManager.containsPath(limitingPolicy.getPathRegExp())) {
             publish(limitingPolicy);
         }
