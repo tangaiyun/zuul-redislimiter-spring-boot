@@ -18,10 +18,39 @@
  */
 package com.tay.zuulredislimiter;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
+
 public class DefaultPolicyValidator implements PolicyValidator {
+	private static String[] TIMEUNITS = {TimeUnit.SECONDS.name(), TimeUnit.MINUTES.name(), TimeUnit.HOURS.name(), TimeUnit.DAYS.name()};
+	private static HashSet<String> validTimeUnitNames = new HashSet<String>(Arrays.asList(TIMEUNITS));
     @Override
     public boolean validate(LimitingPolicy limitingPolicy) {
-        //todo
-        return true;
+        boolean isValid = false;
+        if(limitingPolicy != null) {
+        	isValid = checkBaseExp(limitingPolicy.getBaseExp()) && checkTimeUnit(limitingPolicy.getTimeUnit()) && checkPermits(limitingPolicy.getPermits());
+        }
+        return isValid;
+    }
+    
+    private boolean checkBaseExp(String baseExp) {
+    	if(baseExp != null) {
+    		if(baseExp.startsWith("Headers['") && baseExp.endsWith("']")) {
+    			return true;
+    		}
+    		if(baseExp.startsWith("Cookies['") && baseExp.endsWith("']")) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    private boolean checkTimeUnit(String timeUnit) {
+    	return validTimeUnitNames.contains(timeUnit);
+    }
+    
+    private boolean checkPermits(int permits) {
+    	return permits > 0;
     }
 }
