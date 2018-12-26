@@ -39,8 +39,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
-public class LimitingPolicyManager extends JedisPubSub implements InitializingBean {
-    Logger logger = LoggerFactory.getLogger(LimitingPolicyManager.class);
+public final class LimitingPolicyManager extends JedisPubSub implements InitializingBean {
+    private static Logger logger = LoggerFactory.getLogger(LimitingPolicyManager.class);
 
     private final ZuulRedisLimiterProperties zuulRedisLimiterProperties;
 
