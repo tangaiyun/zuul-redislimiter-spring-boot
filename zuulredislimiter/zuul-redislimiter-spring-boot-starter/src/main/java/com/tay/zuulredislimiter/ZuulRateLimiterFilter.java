@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public final class ZuulRateLimiterFilter extends ZuulFilter implements ApplicationContextAware {
 
-    Logger logger = LoggerFactory.getLogger(ZuulRateLimiterFilter.class);
+    private static Logger logger = LoggerFactory.getLogger(ZuulRateLimiterFilter.class);
     private final ZuulRedisLimiterProperties zuulRedisLimiterProperties;
     private final LimitingPolicyManager limitingPolicyManager;
     private final RateCheckTaskRunner rateCheckTaskRunner;
