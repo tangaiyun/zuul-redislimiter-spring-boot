@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 @ConfigurationProperties(prefix = "zuul.redis-limiter")
 @Data
-public class ZuulRedisLimiterProperties {
+public final class ZuulRedisLimiterProperties {
     /**
      * Redis server host
      */
