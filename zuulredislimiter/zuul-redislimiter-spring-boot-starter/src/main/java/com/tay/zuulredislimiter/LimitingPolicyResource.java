@@ -33,8 +33,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/zuullimiterpolicy")
-public class LimitingPolicyResource {
-    Logger logger = LoggerFactory.getLogger(LimitingPolicyResource.class);
+public final class LimitingPolicyResource {
+    private static Logger logger = LoggerFactory.getLogger(LimitingPolicyResource.class);
 
     private final JedisPool jedisPool;
 
