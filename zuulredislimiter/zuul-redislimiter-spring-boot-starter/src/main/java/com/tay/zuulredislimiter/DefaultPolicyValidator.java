@@ -23,8 +23,8 @@ import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 public final class DefaultPolicyValidator implements PolicyValidator {
-	private static String[] TIMEUNITS = {TimeUnit.SECONDS.name(), TimeUnit.MINUTES.name(), TimeUnit.HOURS.name(), TimeUnit.DAYS.name()};
-	private static HashSet<String> validTimeUnitNames = new HashSet<String>(Arrays.asList(TIMEUNITS));
+    private static String[] TIMEUNITS = {TimeUnit.SECONDS.name(), TimeUnit.MINUTES.name(), TimeUnit.HOURS.name(), TimeUnit.DAYS.name()};
+    private static HashSet<String> validTimeUnitNames = new HashSet<String>(Arrays.asList(TIMEUNITS));
     @Override
     public boolean validate(LimitingPolicy limitingPolicy) {
         boolean isValid = false;
