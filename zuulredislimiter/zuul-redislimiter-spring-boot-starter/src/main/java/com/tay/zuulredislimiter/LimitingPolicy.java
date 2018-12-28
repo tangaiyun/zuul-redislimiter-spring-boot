@@ -56,6 +56,7 @@ public final class LimitingPolicy {
     public LimitingPolicy copy() {
         LimitingPolicy limitingPolicy = new LimitingPolicy();
         limitingPolicy.setServiceId(this.serviceId);
+        limitingPolicy.setOrder(this.order);
         limitingPolicy.setBaseExp(this.baseExp);
         limitingPolicy.setPathRegExp(this.pathRegExp);
         limitingPolicy.setTimeUnit(this.timeUnit);
